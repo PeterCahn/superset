@@ -3,7 +3,7 @@
 set -e
 
 # Create an admin user
-echo printf "pietro\n \n \n \npassword\npassword\n" | fabmanager create-admin --app superset $@
+fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password password
 
 # Initialize the database
 superset db upgrade
