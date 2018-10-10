@@ -1,4 +1,10 @@
-FROM debian:stretch # Superset version ARG SUPERSET_VERSION=0.27.0 # Configure environment ENV GUNICORN_BIND=0.0.0.0:8088 \
+FROM debian:stretch 
+
+# Superset version 
+ARG SUPERSET_VERSION=0.27.0 
+
+# Configure environment 
+ENV GUNICORN_BIND=0.0.0.0:8088 \
 GUNICORN_LIMIT_REQUEST_FIELD_SIZE=0 \
 GUNICORN_LIMIT_REQUEST_LINE=0 \
 GUNICORN_TIMEOUT=60 \
