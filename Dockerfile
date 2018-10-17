@@ -72,5 +72,4 @@ EXPOSE 8088
 HEALTHCHECK CMD ["curl", "-f", "http://localhost:8088/health"]
 CMD ["gunicorn", "superset:app"]
 USER superset
-RUN chown -R superset:superset /usr/local/bin/superset-init && \
-	superset-init
+RUN superset-init
