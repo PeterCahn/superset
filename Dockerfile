@@ -62,6 +62,7 @@ RUN useradd -U -m superset && \
 
 # Configure Filesystem
 COPY superset /usr/local/bin
+RUN chmod 755 /usr/local/bin/superset-init
 VOLUME /home/superset \
        /etc/superset \
        /var/lib/superset
