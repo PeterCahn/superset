@@ -2,16 +2,10 @@
 
 set -e
 
-# Copy superset configuration file if not present
-if [ ! -f /etc/superset/superset_config.py ] ; then
-	/bin/cp /usr/local/bin/superset_config.py /etc/superset/
-	chown superset:superset /usr/local/bin/superset_config.py
-fi
-
 # Init superset.db if not present
 if [ ! -f /var/lib/superset/superset.db ] ; then
 	touch /var/lib/superset/superset.db
-	chown superset:superset /var/lib/superset/superset.db
+	chmod 755 /var/lib/superset/superset.db
 fi
 
 # Create an admin user

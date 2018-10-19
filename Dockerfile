@@ -61,8 +61,9 @@ RUN useradd -U -m superset && \
     rm requirements.txt
 
 # Configure Filesystem
-COPY superset /usr/local/bin
-RUN chmod 755 /usr/local/bin/superset-init
+COPY superset/superset_config.py /etc/superset/superset_config.py
+COPY superset/superset-init /usr/local/bin/superset-init
+#COPY superset /usr/local/bin
 VOLUME /home/superset \
        /etc/superset \
        /var/lib/superset
@@ -75,4 +76,5 @@ CMD ["gunicorn", "superset:app"]
 USER superset
 
 # Init login user
-RUN superset-init
+RUN chmod 755 /usr/local/bin/superset-init && \
+	superset-init
