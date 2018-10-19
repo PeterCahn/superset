@@ -63,9 +63,7 @@ RUN useradd -U -m superset && \
     rm requirements.txt
 
 # Configure Filesystem
-COPY superset/superset_config.py /etc/superset/superset_config.py
 COPY superset/superset-init /usr/local/bin/superset-init
-#COPY superset /usr/local/bin
 VOLUME /home/superset \
        /etc/superset \
        /var/lib/superset
