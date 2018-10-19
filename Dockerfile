@@ -73,7 +73,7 @@ WORKDIR /home/superset
 
 # Init login user
 RUN chmod 755 /usr/local/bin/superset-init
-ENTRYPOINT ["superset-init"]
+#ENTRYPOINT ["superset-init"]
 
 # Deploy application
 EXPOSE 8088
