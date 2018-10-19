@@ -75,7 +75,7 @@ HEALTHCHECK CMD ["curl", "-f", "http://localhost:8088/health"]
 CMD ["gunicorn", "superset:app"]
 
 # Init login user
-RUN chmod 755 /usr/local/bin/superset-init && \
-	superset-init
+RUN chmod 755 /usr/local/bin/superset-init
+ENTRYPOINT ["superset-init"]
 	
 USER superset
