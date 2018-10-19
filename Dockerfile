@@ -2,6 +2,7 @@ FROM python:3.6
 
 # Superset version
 ARG SUPERSET_VERSION=0.28.0
+ARG SUPERSETUSER=superset
 
 # Configure environment
 ENV GUNICORN_BIND=0.0.0.0:8088 \
@@ -14,7 +15,8 @@ ENV GUNICORN_BIND=0.0.0.0:8088 \
     PYTHONPATH=/etc/superset:/home/superset:$PYTHONPATH \
     SUPERSET_REPO=apache/incubator-superset \
     SUPERSET_VERSION=${SUPERSET_VERSION} \
-    SUPERSET_HOME=/var/lib/superset
+    SUPERSET_HOME=/var/lib/superset \
+	SUPERSETUSER=${SUPERSETUSER}
 ENV GUNICORN_CMD_ARGS="--workers ${GUNICORN_WORKERS} --timeout ${GUNICORN_TIMEOUT} --bind ${GUNICORN_BIND} --limit-request-line ${GUNICORN_LIMIT_REQUEST_LINE} --limit-request-field_size ${GUNICORN_LIMIT_REQUEST_FIELD_SIZE}"
 
 # Create superset user & install dependencies
@@ -69,13 +71,12 @@ VOLUME /home/superset \
        /var/lib/superset
 WORKDIR /home/superset
 
+# Init login user
+RUN chmod 755 /usr/local/bin/superset-init
+ENTRYPOINT ["superset-init"]
+
 # Deploy application
 EXPOSE 8088
 HEALTHCHECK CMD ["curl", "-f", "http://localhost:8088/health"]
 CMD ["gunicorn", "superset:app"]
-
-# Init login user
-RUN chmod 755 /usr/local/bin/superset-init
-ENTRYPOINT ["superset-init"]
-	
 USER superset
