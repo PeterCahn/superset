@@ -17,6 +17,7 @@ ENV GUNICORN_BIND=0.0.0.0:8088 \
     SUPERSET_VERSION=${SUPERSET_VERSION} \
     SUPERSET_HOME=/var/lib/superset \
 	SUPERSETUSER=${SUPERSETUSER}
+	
 ENV GUNICORN_CMD_ARGS="--workers ${GUNICORN_WORKERS} --timeout ${GUNICORN_TIMEOUT} --bind ${GUNICORN_BIND} --limit-request-line ${GUNICORN_LIMIT_REQUEST_LINE} --limit-request-field_size ${GUNICORN_LIMIT_REQUEST_FIELD_SIZE}"
 
 # Create superset user & install dependencies
@@ -58,23 +59,26 @@ RUN useradd -U -m superset && \
         pymssql==2.1.3 \
         redis==2.10.5 \
         sqlalchemy-clickhouse==0.1.5.post0 \
-        sqlalchemy-redshift==0.5.0 \
+        sqlalchemy-redshift==0.7.1 \
         superset==${SUPERSET_VERSION} && \
-    rm requirements.txt
+		rm requirements.txt
 
 # Configure Filesystem
 COPY superset/superset-init /usr/local/bin/superset-init
-VOLUME /home/superset \
-       /etc/superset \
-       /var/lib/superset
+
+VOLUME 	/home/superset \
+		/etc/superset \
+		/var/lib/superset
+	   
 WORKDIR /home/superset
 
 # Init login user
 RUN chmod 755 /usr/local/bin/superset-init
-#ENTRYPOINT ["superset-init"]
 
 # Deploy application
 EXPOSE 8088
+
 HEALTHCHECK CMD ["curl", "-f", "http://localhost:8088/health"]
+
 CMD ["gunicorn", "superset:app"]
 USER superset
