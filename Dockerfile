@@ -1,7 +1,7 @@
 FROM python:3.6
 
 # Superset version
-ARG SUPERSET_VERSION=0.28.0
+ARG SUPERSET_VERSION=0.28.1
 ARG SUPERSETUSER=superset
 
 # Configure environment
