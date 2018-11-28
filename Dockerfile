@@ -69,16 +69,16 @@ COPY superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab
 COPY superset/dataframe.py /usr/local/lib/python3.6/site-packages/superset/dataframe.py
 COPY superset/install-dremio.sh /etc/superset
 
-VOLUME 	/home/superset \
-		/etc/superset \
-		/var/lib/superset
-	   
+VOLUME  /home/superset \
+        /etc/superset \
+        /var/lib/superset
+
 WORKDIR /home/superset
 
-# Init login user
+# Init login user + add Dremio driver and dialect
 RUN chmod 755 /etc/superset/install-dremio.sh && \
-	chmod 755 /usr/local/bin/superset-init && \
-	/etc/superset/install-dremio.sh
+        chmod 755 /usr/local/bin/superset-init && \
+        /etc/superset/install-dremio.sh
 
 # Deploy application
 EXPOSE 8088
