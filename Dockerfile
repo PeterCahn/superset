@@ -38,11 +38,11 @@ RUN useradd -U -m superset && \
         libpq-dev \
         libsasl2-dev \
         libssl-dev && \
-    apt-get clean && \
-    rm -r /var/lib/apt/lists/* && \
-    curl https://raw.githubusercontent.com/${SUPERSET_REPO}/${SUPERSET_VERSION}/requirements.txt -o requirements.txt && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir \
+		apt-get clean && \
+		rm -r /var/lib/apt/lists/* && \
+		curl https://raw.githubusercontent.com/${SUPERSET_REPO}/${SUPERSET_VERSION}/requirements.txt -o requirements.txt && \
+		pip install --no-cache-dir -r requirements.txt && \
+		pip install --no-cache-dir \
         Werkzeug==0.12.1 \
         flask-cors==3.0.3 \
         flask-mail==0.9.1 \
@@ -73,7 +73,9 @@ VOLUME 	/home/superset \
 WORKDIR /home/superset
 
 # Init login user
-RUN chmod 755 /usr/local/bin/superset-init
+RUN chmod 755 /etc/superset/install-dremio.sh && \
+	chmod 755 /usr/local/bin/superset-init && \
+	/etc/superset/install-dremio.sh
 
 # Deploy application
 EXPOSE 8088
