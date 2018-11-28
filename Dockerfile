@@ -67,7 +67,7 @@ RUN useradd -U -m superset && \
 COPY superset/superset-init /usr/local/bin/superset-init
 COPY superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab.py
 COPY superset/dataframe.py /usr/local/lib/python3.6/site-packages/superset/dataframe.py
-COPY superset/isntall-dremio.sh /etc/superset
+COPY superset/install-dremio.sh /etc/superset
 
 VOLUME 	/home/superset \
 		/etc/superset \
