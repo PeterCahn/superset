@@ -38,11 +38,11 @@ RUN useradd -U -m superset && \
         libpq-dev \
         libsasl2-dev \
         libssl-dev && \
-		apt-get clean && \
-		rm -r /var/lib/apt/lists/* && \
-		curl https://raw.githubusercontent.com/${SUPERSET_REPO}/${SUPERSET_VERSION}/requirements.txt -o requirements.txt && \
-		pip install --no-cache-dir -r requirements.txt && \
-		pip install --no-cache-dir \
+        apt-get clean && \
+        rm -r /var/lib/apt/lists/* && \
+        curl https://raw.githubusercontent.com/${SUPERSET_REPO}/${SUPERSET_VERSION}/requirements.txt -o requirements.txt && \
+        pip install --no-cache-dir -r requirements.txt && \
+        pip install --no-cache-dir \
         Werkzeug==0.12.1 \
         flask-cors==3.0.3 \
         flask-mail==0.9.1 \
@@ -65,6 +65,9 @@ RUN useradd -U -m superset && \
 
 # Configure Filesystem
 COPY superset/superset-init /usr/local/bin/superset-init
+COPY superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab.py
+COPY superset/dataframe.py /usr/local/lib/python3.6/site-packages/superset/dataframe.py
+COPY superset/isntall-dremio.sh /etc/superset
 
 VOLUME 	/home/superset \
 		/etc/superset \

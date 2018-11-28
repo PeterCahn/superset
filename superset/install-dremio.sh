@@ -20,13 +20,13 @@ python3 setup.py bdist_wheel
 ls -l dist
 # Run tests
 python3 -m pip install pytest
-python3 sqlalchemy_dremio/tests/conftest.py
+python3 tests/conftest.py
 
 # 5) Install the package to the active python3's site-packages
 python3 setup.py install
 
 # 6) Replace file with changes
-cp -f /etc/superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab.py
-cp -f /etc/superset/dataframe.py /usr/local/lib/python3.6/site-packages/superset/dataframe.py
+#cp -f /etc/superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab.py
+#cp -f /etc/superset/dataframe.py /usr/local/lib/python3.6/site-packages/superset/dataframe.py
 
 
