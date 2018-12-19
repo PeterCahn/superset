@@ -1,7 +1,6 @@
 
 FORWARDED_ALLOW_IPS = '*'
 ENABLE_PROXY_FIX = True
-#PREFERRED_URL_SCHEME = 'https'
 
 ####
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
