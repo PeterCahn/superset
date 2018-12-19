@@ -104,7 +104,7 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         ruolo_dipendente = 'csi_piemonte'
         ruolo_consulente = 'csi_piemonte_consulente'
 
-        redirect_url = "/csi_sii" + self.appbuilder.get_url_for_index
+        redirect_url = "/" + self.appbuilder.get_url_for_index
 
         # Flushing flash message "Access is denied"
         if web_session and '_flashes' in web_session:
