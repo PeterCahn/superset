@@ -4,7 +4,7 @@ USER root
 
 # Configure Filesystem
 COPY superset/superset-init /usr/local/bin/superset-init
-COPY superset/custom-config /usr/local/bin/custom-config.py
+COPY superset/custom-config.py /usr/local/bin/custom-config.py
 COPY superset/install-dremio.sh /usr/local/bin/install-dremio.sh
 
 COPY superset/sql_lab.py /usr/local/lib/python3.6/site-packages/superset/sql_lab.py
