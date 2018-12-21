@@ -9,7 +9,7 @@ if [ ! -f /var/lib/superset/superset.db ] ; then
 fi
 
 # Create an admin user
-fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password password
+fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password superset
 
 # Initialize the database
 superset db upgrade
