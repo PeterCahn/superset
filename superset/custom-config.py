@@ -1,10 +1,5 @@
-
 FORWARDED_ALLOW_IPS = '*'
 ENABLE_PROXY_FIX = True
-<<<<<<< HEAD
-#PREFERRED_URL_SCHEME = 'https'
-=======
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
 
 ####
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
@@ -30,80 +25,8 @@ from flask_appbuilder.security.views import expose
 from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_login import login_user, logout_user
 
-<<<<<<< HEAD
-#import sys
-#sys.setrecursionlimit(5500000)
-#logger.debug('Recursion limit: %d', sys.getrecursionlimit() )
-
 class CustomAuthRemoteView(AuthRemoteUserView):
 
-    @expose('/odata/<dataset_code>', methods=['GET'])
-    def download_csv(self, dataset_code):
-         
-         import requests, json, os, re
-         if os.environ.get('CLIENTID') and os.environ.get('CLIENTSECRET'):
-
-             m = re.search('(.[a-z_]*)_(.[0-9]*)', dataset_code)
-             datasetCode = m.group(1)
-             datasetId = m.group(2)
-    
-             client_id = dict()
-             client_secret = dict()
-
-             token_url = "https://api.smartdatanet.it/api/token"
-
-             base_url = 'https://api.smartdatanet.it/api/'
-             api_url = base_url + dataset_code +'/download/' + datasetId + '/all'
-
-             logger.debug('URL for downloading CSV: %s', api_url)
-
-             #client (application) credentials
-             #client_id['dipendente'] = 'P2TRb_2IzeezyiLhjJNSg_71pN8a'
-             #client_secret['dipendente'] = 'fZhPivCbJmIaTmDu115pcHbC_Z4a'
-
-             client_id['dipendente'] = os.environ.get('CLIENTID')
-             client_secret['dipendente'] = os.environ.get('CLIENTSECRET')
-
-             #step A, B - single call with client credentials as the basic auth header - will return access_token
-
-             # Recupera utente loggato e suo ruolo
-             logger.debug('Downloading as user: %s', g.user)
-          
-             sm = self.appbuilder.sm     
-             if any([ r in [sm.find_role('Admin'), sm.find_role('csi_piemonte')] for r in g.user.roles ]):
-                 ruolo = 'dipendente'
-             else:
-                 ruolo = 'non dipendente'
-                 return redirect('/')
-
-             logger.debug('Ruolo: Admin/%s', ruolo) 
-  
-             data = {'grant_type': 'client_credentials'}
-             access_token_response = requests.post(token_url, data=data, verify=False, allow_redirects=False, auth=(client_id[ruolo], client_secret[ruolo]))
-             tokens = json.loads(access_token_response.text)
-
-             logger.debug('Access token in use: ' + tokens['access_token'])
-
-             #step B - with the returned access_token we can make as many calls as we want
-
-             api_call_headers = {'Authorization': 'Bearer ' + tokens['access_token']}
-             api_call_response = requests.get(api_url, headers=api_call_headers, verify=False)
-
-             csv = api_call_response.content
-
-             response = make_response(csv)
-             cd = 'attachment; filename=export.csv'
-             response.headers['Content-Disposition'] = cd
-             response.mimetype='text/csv'
-
-             return response
-         else:
-             logger.debug('No CLIENTID and CLIENTSECRET provided')
-
-=======
-class CustomAuthRemoteView(AuthRemoteUserView):
-
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
     @expose('/logout/')
     def logout(self):
         redirect_url = "https://intranet.csi.it/csis_liv1_icsi/Shibboleth.sso/Logout"
@@ -121,16 +44,12 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         ruolo_dipendente = 'csi_piemonte'
         ruolo_consulente = 'csi_piemonte_consulente'
 
-<<<<<<< HEAD
         intent = request.args.get('next','')
         logger.debug('intent: %s', intent)
         if len(intent) > 0:
             redirect_url = intent
         else:
             redirect_url = "/" + self.appbuilder.get_url_for_index
-=======
-        redirect_url = "/" + self.appbuilder.get_url_for_index
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
 
         # Flushing flash message "Access is denied"
         if web_session and '_flashes' in web_session:
@@ -164,11 +83,7 @@ class CustomAuthRemoteView(AuthRemoteUserView):
                 user = session.query(sm.user_model).filter_by(username=request.form.get('username')).first()
                 if user and login_user(user) :
                     logger.debug('user \'%s\' has logged in', user)
-<<<<<<< HEAD
                     return redirect(redirect_url)
-=======
-                    return redirect("/superset/welcome")
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
                 else:
                     logger.debug('user \'%s\' did not log in', user)
                     return self.render_template(login_template,
@@ -232,9 +147,3 @@ class CustomSecurityManager(SupersetSecurityManager):
 
 AUTH_TYPE = 3
 CUSTOM_SECURITY_MANAGER = CustomSecurityManager
-
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6

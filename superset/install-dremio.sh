@@ -26,13 +26,8 @@ python3 setup.py sdist
 python3 setup.py bdist_wheel
 ls -l dist
 # Run tests
-<<<<<<< HEAD
 #python3 -m pip install pytest
 #python3 tests/conftest.py
-=======
-python3 -m pip install pytest
-python3 tests/conftest.py
->>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
 
 # 5) Install the package to the active python3's site-packages
 echo "[install-dremio.sh] Install the package to the active python3's site-packages"
