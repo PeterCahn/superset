@@ -2,6 +2,8 @@
 
 set -e
 
+echo "[superset-init] Initing default user..."
+
 # Init superset.db if not present
 if [ ! -f /var/lib/superset/superset.db ] ; then
 	touch /var/lib/superset/superset.db
@@ -9,10 +11,14 @@ if [ ! -f /var/lib/superset/superset.db ] ; then
 fi
 
 # Create an admin user
-fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password password
+echo "Creating admin user: $SUPERSETUSER"
+fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password superset
 
+echo "[superset-init] Upgrading DB..."
 # Initialize the database
 superset db upgrade
 
+echo "[superset-init] Superset Init..."
 # Create default roles and permissions
 superset init
+
