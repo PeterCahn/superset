@@ -1,7 +1,10 @@
 
 FORWARDED_ALLOW_IPS = '*'
 ENABLE_PROXY_FIX = True
+<<<<<<< HEAD
 #PREFERRED_URL_SCHEME = 'https'
+=======
+>>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
 
 ####
 from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
@@ -27,6 +30,7 @@ from flask_appbuilder.security.views import expose
 from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_login import login_user, logout_user
 
+<<<<<<< HEAD
 #import sys
 #sys.setrecursionlimit(5500000)
 #logger.debug('Recursion limit: %d', sys.getrecursionlimit() )
@@ -96,6 +100,10 @@ class CustomAuthRemoteView(AuthRemoteUserView):
          else:
              logger.debug('No CLIENTID and CLIENTSECRET provided')
 
+=======
+class CustomAuthRemoteView(AuthRemoteUserView):
+
+>>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
     @expose('/logout/')
     def logout(self):
         redirect_url = "https://intranet.csi.it/csis_liv1_icsi/Shibboleth.sso/Logout"
@@ -113,12 +121,16 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         ruolo_dipendente = 'csi_piemonte'
         ruolo_consulente = 'csi_piemonte_consulente'
 
+<<<<<<< HEAD
         intent = request.args.get('next','')
         logger.debug('intent: %s', intent)
         if len(intent) > 0:
             redirect_url = intent
         else:
             redirect_url = "/" + self.appbuilder.get_url_for_index
+=======
+        redirect_url = "/" + self.appbuilder.get_url_for_index
+>>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
 
         # Flushing flash message "Access is denied"
         if web_session and '_flashes' in web_session:
@@ -152,7 +164,11 @@ class CustomAuthRemoteView(AuthRemoteUserView):
                 user = session.query(sm.user_model).filter_by(username=request.form.get('username')).first()
                 if user and login_user(user) :
                     logger.debug('user \'%s\' has logged in', user)
+<<<<<<< HEAD
                     return redirect(redirect_url)
+=======
+                    return redirect("/superset/welcome")
+>>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
                 else:
                     logger.debug('user \'%s\' did not log in', user)
                     return self.render_template(login_template,
@@ -217,3 +233,8 @@ class CustomSecurityManager(SupersetSecurityManager):
 AUTH_TYPE = 3
 CUSTOM_SECURITY_MANAGER = CustomSecurityManager
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 829da4c771cb5101f9f9025c46be43d7eb758ff6
