@@ -18,4 +18,3 @@ ENV SUPERSETUSER=superset
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["gunicorn", "superset:app"]
-USER superset
