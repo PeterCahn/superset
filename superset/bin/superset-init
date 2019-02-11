@@ -11,8 +11,34 @@ if [ ! -f /var/lib/superset/superset.db ] ; then
 fi
 
 # Create an admin user
-echo "Creating admin user: $SUPERSETUSER"
-fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETUSER --lastname $SUPERSETUSER --email $SUPERSETUSER@superset.csi.it --password superset
+if [ -n "$SUPERSETFIRSTNAME" -a -n "$SUPERSETLASTNAME" ] ; then
+	# FirstName and LastName are provided
+        export SUPERSETUSER=$( echo "$SUPERSETFIRSTNAME.$SUPERSETLASTNAME" | tr '[:upper:]' '[:lower:]')
+	if [ -z "$SUPERSETEMAIL" ] ; then
+		# Build email because it is not provided
+		export SUPERSETEMAIL=$SUPERSETUSER@csi.it
+	fi
+else
+	# Mixed info provided (SUPERSETUSER may be changed)
+	if  [ -z "$SUPERSETFIRSTNAME" ] ; then
+		export SUPERSETFIRSTNAME=$SUPERSETUSER
+	fi
+	if  [ -z "$SUPERSETLASTNAME" ] ; then
+	        export SUPERSETLASTNAME=$SUPERSETUSER
+	fi
+	if  [ -z "$SUPERSETEMAIL" ] ; then
+		export SUPERSETEMAIL=$SUPERSETUSER@csi.it
+	fi
+fi
+
+if [ -z "$SUPSERSETPASSWORD" ] ; then
+	export SUPERSETPASSWORD=password
+fi
+
+echo "Creating admin user '$SUPERSETUSER': $SUPERSETFIRSTNAME $SUPERSETLASTNAME (email: $SUPERSETEMAIL) with password '$SUPERSETPASSWORD'"
+
+
+fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETFIRSTNAME --lastname $SUPERSETLASTNAME --email $SUPERSETEMAIL --password $SUPERSETPASSWORD
 
 echo "[superset-init] Upgrading DB..."
 # Initialize the database
