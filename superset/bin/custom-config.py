@@ -26,7 +26,7 @@ from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_login import login_user, logout_user
 
 # Change Metadata DB if env variable is set
-if os.get('SQLALCHEMY_METADATA_URI') is not None
+if os.get('SQLALCHEMY_METADATA_URI') is not None:
     SQLALCHEMY_DATABASE_URI = 'SQLALCHEMY_METADATA_URI'
 
 class CustomAuthRemoteView(AuthRemoteUserView):
