@@ -13,7 +13,7 @@ ENV SUPERSETUSER=superset
 
 # Provide the image with base datasources and dashboard for the testing environment
 COPY config/datasources.yaml /home/superset
-COPY config/datshboards.json /home/superset
+COPY config/dashboards.json /home/superset
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
