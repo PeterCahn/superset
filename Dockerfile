@@ -12,8 +12,8 @@ RUN chmod 755 /usr/local/bin/install-dremio.sh /usr/local/bin/superset-init /usr
 ENV SUPERSETUSER=superset
 
 # Provide the image with base datasources and dashboard for the testing environment
-COPY config/datasources.yaml /home/superset
-COPY config/dashboards.json /home/superset
+COPY config/datasources.yaml /home/superset/datasources.yaml
+COPY config/dashboards.json /home/superset/dashboards.json
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
