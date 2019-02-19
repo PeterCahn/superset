@@ -48,10 +48,10 @@ echo "[superset-init] Superset Init..."
 # Create default roles and permissions
 superset init
 
-echo "[superset-init] Importing datasources..."
-superset import_datasources -p /home/superset/datasources.yaml
+if [ -n "$SQLALCHEMY_DATA_URI" ] ; then
+        echo "[superset-init] Importing datasources..."
+        superset import_datasources -p /home/superset/datasources.yaml
 
-echo "[superset-init] Importing dashboards..."
-superset import_dashboards -p /home/superset/dashboards.json
-
-
+        echo "[superset-init] Importing dashboards..."
+        superset import_dashboards -p /home/superset/dashboards.json
+fi
