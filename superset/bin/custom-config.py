@@ -67,7 +67,7 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         all_headers = os.getenv('SHIB_HEADERS','');
         headers = [x.strip() for x in all_headers.split(',')]
 	
-        if headers is None :
+        if headers is None or ( headers and (not request.headers.get(headers[0]) or not request.headers.get(headers[1])) ) :
             # Here handle standard Superset login, if no Shibboleth headers are set
             logger.debug('There are no Shibboleth header: %s', url_for(self.appbuilder.sm.auth_view.__class__.__name__ + '.login'))
             logger.debug('form data: %s', request.form)
