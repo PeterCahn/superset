@@ -1,11 +1,12 @@
 databases:
 - database_name: PostgresDB
   allow_csv_upload: true
-  allow_run_async: true
+  allow_ctas: true
   expose_in_sqllab: true
   extra: "{\r\n    \"metadata_params\": {},\r\n    \"engine_params\": {},\r\n    \"\
     metadata_cache_timeout\": {},\r\n    \"schemas_allowed_for_csv_upload\": []\r\n\
     }\r\n"
   sqlalchemy_uri: postgresql://superset:superset@172.23.0.2:5432/superset
   tables: []
+
 
