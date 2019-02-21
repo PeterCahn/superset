@@ -30,6 +30,21 @@ if os.environ.get('SQLALCHEMY_METADATA_URI') is not None:
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_METADATA_URI')
     logger.debug('Metadata DB: %s', SQLALCHEMY_DATABASE_URI)
 
+# Check if enable cache
+if os.environ.get('CACHE_ENABLED') :
+   directory = '/etc/superset_cache'
+   if not os.path.exists(directory):
+      os.makedirs(directory, exist_ok=True)
+
+   CACHE_DEFAULT_TIMEOUT = 60 * 60 * 24
+   CACHE_CONFIG = {
+      'CACHE_TYPE': 'filesystem',
+      'CACHE_DIR': directory
+   }
+   logger.debug('Cache is enabled. Cache dir: {0}'.format(directory))
+else:
+   logger.debug('Cache is disabled.')
+
 class CustomAuthRemoteView(AuthRemoteUserView):
 
     @expose('/logout/')
