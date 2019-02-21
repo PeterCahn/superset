@@ -28,7 +28,22 @@ from flask_login import login_user, logout_user
 # Change Metadata DB if env variable is set
 if os.environ.get('SQLALCHEMY_METADATA_URI') is not None:
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_METADATA_URI')
-logger.debug('Metadata DB: %s', SQLALCHEMY_DATABASE_URI)
+    logger.debug('Metadata DB: %s', SQLALCHEMY_DATABASE_URI)
+
+# Check if enable cache
+if os.environ.get('CACHE_ENABLED') :
+   directory = '/etc/superset_cache'
+   if not os.path.exists(directory):
+      os.makedirs(directory, exist_ok=True)
+
+   CACHE_DEFAULT_TIMEOUT = 60 * 60 * 24
+   CACHE_CONFIG = {
+      'CACHE_TYPE': 'filesystem',
+      'CACHE_DIR': directory
+   }
+   logger.debug('Cache is enabled. Cache dir: {0}'.format(directory))
+else:
+   logger.debug('Cache is disabled.')
 
 class CustomAuthRemoteView(AuthRemoteUserView):
 
@@ -64,13 +79,10 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         sm = self.appbuilder.sm
         session = sm.get_session
 		
-        # Two headers are required: Shib-Identita-Matricola and Shib-Tipo-Risorsa (others may be present): 
-  	#	All Possible Headers: "Shib-Identita-Matricola, Shib-Tipo-Risorsa, Shib-Identita-Nome, Shib-Identita-Cognome, socialMail, socialUniqueID"
         all_headers = os.getenv('SHIB_HEADERS','');
         headers = [x.strip() for x in all_headers.split(',')]
-		
-        if any([k not in request.headers
-                for k in [headers[0], headers[1]] ]):
+	
+        if headers is None or ( headers and (not request.headers.get(headers[0]) or not request.headers.get(headers[1])) ) :
             # Here handle standard Superset login, if no Shibboleth headers are set
             logger.debug('There are no Shibboleth header: %s', url_for(self.appbuilder.sm.auth_view.__class__.__name__ + '.login'))
             logger.debug('form data: %s', request.form)
@@ -89,7 +101,9 @@ class CustomAuthRemoteView(AuthRemoteUserView):
                 else:
                     logger.debug('user \'%s\' did not log in', user)
                     return self.render_template(login_template, title='Sign in', form=form, appbuilder=self.appbuilder)
-            
+
+        # if you get here, there are some headers: two headers are required
+
         resource_id = request.headers.get(headers[0])
         resource_type = request.headers.get(headers[1]).lower()
 
