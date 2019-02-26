@@ -4,17 +4,14 @@ services:
         image: pietrocannalire/superset:base
         container_name: superset
         environment:
-            - SUPERSETFIRSTNAME=$SUPERSETFIRSTNAME
-            - SUPERSETLASTNAME=$SUPERSETLASTNAME
-            - LOGOUT_REDICECTURL=$LOGOUT_REDICECTURL
-            - SHIB_HEADERS=$SHIB_HEADERS
-            - SUPERSET_CONFIG_PATH=$SUPERSET_CONFIG_PATH
-            - SQLALCHEMY_METADATA_URI=$SQLALCHEMY_METADATA_URI
+            - SUPERSETFIRSTNAME=${SUPERSETFIRSTNAME}
+            - SUPERSETLASTNAME=${SUPERSETLASTNAME}
+            - CACHE_ENABLED=True
         ports:
             - 8088:8088
         volumes:
             - ./config:/etc/superset
-            - ./sqlite:/var/lib/superset
+            - ./sqlite:/var/lib/superset            
 
     postgres-superset:
         image: postgres:9.6
