@@ -1,4 +1,4 @@
-FROM amancevice/superset:0.28.1
+FROM amancevice/superset:0.29.0rc7
 
 USER root
 
