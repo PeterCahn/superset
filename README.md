@@ -21,7 +21,7 @@ It starts and extends the image of *amancevice* ([GitHub](https://github.com/ama
 
     A JDBC Dremio Connector ([ahmadimtcs/sqlalchemy_dremio](https://github.com/ahmadimtcs/sqlalchemy_dremio)) has been added to connect to an instance of Dremio in Superset.
 
-    [This tips](https://github.com/apache/incubator-superset/issues/4192#issuecomment-424148215) have been followed and the script [install-dremio.sh](https://github.com/PeterCahn/superset/blob/master/superset/bin/install-dremio.sh) is in charge of implementing the main installation steps.
+    [These tips](https://github.com/apache/incubator-superset/issues/4192#issuecomment-424148215) have been followed and the script [install-dremio.sh](https://github.com/PeterCahn/superset/blob/master/superset/bin/install-dremio.sh) is in charge of implementing the main installation steps.
     
     The resources provided in *superset/lib/python3.6/site-packages/superset/dataframe.py* and *superset/lib/python3.6/site-packages/superset/sql_lab.py* are parts of the installation procedure as well and are added directly through the Dockerfile. 
 
@@ -31,9 +31,9 @@ It starts and extends the image of *amancevice* ([GitHub](https://github.com/ama
 
 A configuration script can be added by providing its path name into a volume attached to the image:
 * `/etc/superset/`: the volume where to put the configuration file
-* `PYTHON_CONFIG_PATH`: the environmental variable where to specify the complete path of the configuration script inside the previous (or another) volume (e.g. *PYTHON_CONFIG_PATH=/etc/superset/superset_config.py*)
+* `SUPERSET_CONFIG_PATH`: the environmental variable where to specify the complete path of the configuration script inside the previous (or another) volume (e.g. *SUPERSET_CONFIG_PATH=/etc/superset/superset_config.py*)
 
-The init script will read the configuration file if the environmental variable `PYTHON_CONFIG_PATH` is specified. If not, the [custom-config.py](https://github.com/PeterCahn/superset/blob/master/superset/bin/custom-config.py) (with the basic modifications) is used as default.
+The init script will read the configuration file if the environmental variable `SUPERSET_CONFIG_PATH` is specified. If not, the [custom-config.py](https://github.com/PeterCahn/superset/blob/master/superset/bin/custom-config.py) (with the basic modifications) is used as default.
 
 *P.S.: Start adding new properties from custom-config.py*
 
@@ -56,10 +56,11 @@ The init script will read the configuration file if the environmental variable `
     
     If the first and last name are provided only, all the other will be set accordingly (e.g.: *username: first-name.last-name*, *email: first-name.last-name@csi.it*). You can still set the email, the username and the password to change them indipendently.
     
-* `LOGOUT_REDICECTURL`: the URL where to redirect for the logout (needed for Shibboleth).
+* `LOGOUT_REDIRECTURL`: the URL where to redirect for the logout (needed for Shibboleth).
 * `SHIB_HEADERS`: the list of comma separated strings representing the headers that Shibboleth will set to call the Superset login.
 * `SUPERSET_CONFIG_PATH`: the complete path where to put the custom configuration file (e.g. */etc/superset/superset_config.py*). This path must be inside a Docker volume.
-* `SQLALCHEMY_METADATA_URI`: the SQLalchemy string for connecting to the metadata DB. For example, ff changed to PostgteSQL, it would be something like this: *postgresql://username:password@hostname:port/db-name*.
+* `SQLALCHEMY_METADATA_URI`: the SQLalchemy string for connecting to the metadata DB. For example, if changed to PostgreSQL, it would be something like: *postgresql://username:password@hostname:port/db-name*.
+* `CACHE_ENABLED`: if set to True, it enables the cache on the file system. The cache location is by default */etc/superset_cache*. Do not set this variable to disable the cache.
 
 You can set these variables in the `.env` file and reference them into a *docker-compose.yml*.
 
