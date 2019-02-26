@@ -1,7 +1,7 @@
 version: '3.6'
 services:
     superset:
-        image: pietrocannalire/superset:base
+        image: pietrocannalire/superset:0.29.0rc7
         container_name: superset
         environment:
             - SUPERSETFIRSTNAME=${SUPERSETFIRSTNAME}
@@ -11,7 +11,7 @@ services:
             - 8088:8088
         volumes:
             - ./config:/etc/superset
-            - ./sqlite:/var/lib/superset            
+            - ./sqlite:/var/lib/superset
 
     postgres-superset:
         image: postgres:9.6
