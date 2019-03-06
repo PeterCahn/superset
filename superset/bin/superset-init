@@ -31,7 +31,7 @@ else
 	fi
 fi
 
-if [ -z "$SUPSERSETPASSWORD" ] ; then
+if [ -z "$SUPERSETPASSWORD" ] ; then
 	export SUPERSETPASSWORD=password
 fi
 
