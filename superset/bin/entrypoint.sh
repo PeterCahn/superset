@@ -18,6 +18,9 @@ sed -i -e 's/utc=False/utc=True/g' /usr/local/lib/python3.6/site-packages/supers
 # Fix error when exporting yaml from datasource
 sed -i 's/key=lambda k: sorted(k.items()))/key=lambda k: (k.items()))/' /usr/local/lib/python3.6/site-packages/superset/models/helpers.py
 
+# Fix for ldap authentication (if enabled)
+sed -i 's/username = user\[0\]\[0\]/username = user\[1\]\[0\]/' /usr/local/lib/python3.6/site-packages/flask_appbuilder/security/manager.py
+
 superset-init &
 
 echo "[entrypoint.sh] Calling CMD: $@..."
