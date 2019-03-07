@@ -36,7 +36,7 @@ if [ -z "$SUPERSETPASSWORD" ] ; then
 fi
 
 # Create user SUPERSETUSER if it does not exist
-USER=$(fabmanager list-users --app superset | grep "$SUPERSETUSER" | tr -d '[:space:]')
+USER=$(fabmanager list-users --app superset | grep "username:$SUPERSETUSER" | tr -d '[:space:]')
 if [ -n "$USER" ] ; then
 	echo -e "User '$SUPERSETUSER' already exists:\n$USER"
 else
