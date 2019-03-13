@@ -41,7 +41,7 @@ if os.environ.get('CACHE_ENABLED') :
       'CACHE_TYPE': 'filesystem',
       'CACHE_DIR': directory
    }
-   logger.debug('Cache is enabled. Cache dir: {0}'.format(directory))
+   logger.debug('Cache is enabled. Cache directory: {0}'.format(directory))
 else:
    logger.debug('Cache is disabled.')
 
@@ -50,31 +50,32 @@ class CustomAuthRemoteView(AuthRemoteUserView):
     @expose('/logout/')
     def logout(self):
         redirect_url = os.getenv('LOGOUT_REDIRECTURL','/')
-
+          
         if g and g.user is not None and g.user.is_authenticated:
-            logger.debug('g.user is not None -> %s (auth: %s)', g.user, g.user.is_authenticated)
+            logger.debug('[/logout] User \'%s\' is authenticated (auth: %s). Logging out.', g.user, g.user.is_authenticated)
             logout_user()
             return redirect(redirect_url)
-            
+
+        logger.debug('[/logout] No user is logged in')    
         return redirect(redirect_url)
 
     @expose('/login/', methods=['GET', 'POST'])
     def login(self):
 
         intent = request.args.get('next','')
-        logger.debug('intent: %s', intent)
         if len(intent) > 0:
+            logger.debug('[/login] intent: %s', intent)
             redirect_url = intent
         else:
             redirect_url = "/" + self.appbuilder.get_url_for_index
 
         # Flushing flash message "Access is denied"
-        if web_session and '_flashes' in web_session:
-            web_session.pop('_flashes')
+        #if web_session and '_flashes' in web_session:
+        #    web_session.pop('_flashes')
        
-        if g and g.user is not None and g.user.is_authenticated:
-            logger.debug('g.user: %s  (auth? %s)', g.user, g.user.is_authenticated)
-            return redirect(redirect_url)
+        #if g and g.user is not None and g.user.is_authenticated:
+        #    logger.debug('g.user: %s  (auth? %s)', g.user, g.user.is_authenticated)
+        #    return redirect(redirect_url)
 
         sm = self.appbuilder.sm
         session = sm.get_session
@@ -84,24 +85,28 @@ class CustomAuthRemoteView(AuthRemoteUserView):
 	
         if headers is None or ( headers and (not request.headers.get(headers[0]) or not request.headers.get(headers[1])) ) :
             # Here handle standard Superset login, if no Shibboleth headers are set
-            logger.debug('There are no Shibboleth header: %s', url_for(self.appbuilder.sm.auth_view.__class__.__name__ + '.login'))
-            logger.debug('form data: %s', request.form)
+            logger.debug('[/login] No Shibboleth headers. Standard Login (%s)', url_for(self.appbuilder.sm.auth_view.__class__.__name__ + '.login'))
 
+            if g.user is not None and g.user.is_authenticated:
+                logger.debug('[/login] User \'%s\' is authenticated? %s', g.user, g.user.is_authenticated)
+                return redirect(self.appbuilder.get_url_for_index)  
+            
             login_template = 'appbuilder/general/security/login_ldap.html'
             form = LoginForm_db()
-            if not request.form.get('username') and not request.form.get('password') :
-                logger.debug('request.form has no data: %s | %s', request.form.get('username'), request.form.get('password'))
-                return self.render_template(login_template, title='Sign in', form=form, appbuilder=self.appbuilder)
-            else:
-                logger.debug('request.form has some data: %s | %s', request.form.get('username'), request.form.get('password'))
-                user = session.query(sm.user_model).filter_by(username=request.form.get('username')).first()
-                if user and login_user(user) :
-                    logger.debug('user \'%s\' has logged in', user)
-                    return redirect(redirect_url)
-                else:
-                    logger.debug('user \'%s\' did not log in', user)
-                    return self.render_template(login_template, title='Sign in', form=form, appbuilder=self.appbuilder)
+            if form.validate_on_submit():
+                logger.debug('[/login] Form validated: %s | %s', request.form.get('username'), request.form.get('password'))
+                user = self.appbuilder.sm.auth_user_db(form.username.data, form.password.data)
+                if not user:
+                    logger.debug('[/login] user is: %s', user)
+                    flash(as_unicode(self.invalid_login_message), 'warning')
+                    return redirect(self.appbuilder.get_url_for_login)
+                login_user(user, remember=False)
+                logger.debug('[/login] User logged in')
+                return redirect(self.appbuilder.get_url_for_index)
+            logger.debug('[/login] Form data not validated')
+            return self.render_template(login_template, title='Sign in', form=form, appbuilder=self.appbuilder)
 
+        logger.debug('[/login] Shibboleth headers are here. Reading Shibboleth headers (%s)', url_for(self.appbuilder.sm.auth_view.__class__.__name__ + '.login'))
         # if you get here, there are some headers: two headers are required
 
         resource_id = request.headers.get(headers[0])
@@ -112,32 +117,32 @@ class CustomAuthRemoteView(AuthRemoteUserView):
         email = request.headers.get(headers[4])
         id = request.headers.get(headers[5])
 
-        logger.debug('[Login] Username logging in: %s', resource_id)
-        logger.debug('[Login] Resource Type: %s', resource_type)
-        logger.debug('[Login] First Name, Last Name: %s, %s', name, lastname)
-        logger.debug('[Login] Email: %s', email)
-        logger.debug('[Login] Social Id: %s', id)
+        logger.debug('[/login] Username logging in: %s', resource_id)
+        logger.debug('[/login] Resource Type: %s', resource_type)
+        logger.debug('[/login] First Name, Last Name: %s, %s', name, lastname)
+        logger.debug('[/login] Email: %s', email)
+        logger.debug('[/login] Social Id: %s', id)
 
         user = session.query(sm.user_model).filter_by(username=resource_id).first()
 		
         # Check if User is not active
         if user and not user.is_active:
-            logger.debug('User and not user.is_active: %s', user, user.is_active)
-            return ("Your account is not activated, ask an admin to check the 'Is Active?' box in your user profile")
+            logger.debug('[/login] User \'%s\' is active: %s', user, user.is_active)
+            return ("[/login] Your account is not activated, ask an admin to check the 'Is Active?' box in your user profile")
 				
         # Assign Superset role according to header
         role = sm.find_role(resource_type)
-        logger.debug('Role found: %s', role)
+        logger.debug('[/login] Role found: %s', role)
 		
         # Check the User
         if user is None and resource_id:
             user = sm.add_user(username=resource_id, first_name=name, last_name=lastname, email='{}.{}@csi.it'.format(name, lastname), role=role)
 
             user = sm.auth_user_remote_user(resource_id)
-            logger.debug('User \'%s\' authenticated', user)
+            logger.debug('[/login] User \'%s\' authenticated', user)
         
         elif role and  not any([ r in [sm.find_role('Admin'), role] for r in user.roles ]):
-            logger.debug('Role %s is not in %s', role, user.roles)
+            logger.debug('[/login] Role %s is not in %s', role, user.roles)
             user = session.query(sm.user_model).get(user.id)
             user.roles += [role]
             session.commit()
