@@ -52,3 +52,10 @@ superset db upgrade
 echo "[superset-init] Superset Init..."
 # Create default roles and permissions
 superset init
+
+# Check URI to provide an already created set of dashboards and databases to import (the URI is the DB where the data actually resides)
+if [ -n "$LOAD_EXAMPLES" ] ; then		
+        echo "[superset-init] Loading examples..."
+        superset load_examples
+fi
+
