@@ -16,9 +16,11 @@ fi
 
 # Init superset.db as default DB if no other metadata DB is specified
 if [ -z "$SQLALCHEMY_METADATA_URI" ] ; then
-        echo "[superset-init] Creating default DB"
-        touch /var/lib/superset/superset.db
-        chmod 755 /var/lib/superset/superset.db
+        if [ ! -f /var/lib/superset/superset.db ] ; then
+	        echo "[superset-init] Creating default DB"
+	        touch /var/lib/superset/superset.db
+	        chmod 755 /var/lib/superset/superset.db
+	fi
 else
         echo "[superset-init] Metadata DB: $SQLALCHEMY_METADATA_URI"
 fi
