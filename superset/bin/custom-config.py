@@ -1,17 +1,6 @@
 FORWARDED_ALLOW_IPS = '*'
 ENABLE_PROXY_FIX = True
 
-####
-from flask import flash, redirect, session, url_for, request, g, make_response, jsonify, abort
-from werkzeug.security import generate_password_hash
-from wtforms import validators, PasswordField
-from wtforms.validators import EqualTo
-from flask_babel import lazy_gettext
-
-from flask_appbuilder._compat import as_unicode
-from flask_appbuilder.security.forms import LoginForm_db, LoginForm_oid, ResetPasswordForm, UserInfoEdit
-####
-
 import logging, os
 
 # create logger
@@ -22,7 +11,6 @@ from flask import Flask, redirect, url_for, g, flash, request, make_response, se
 from flask_appbuilder.security.views import UserDBModelView,AuthDBView,AuthRemoteUserView
 from superset.security import SupersetSecurityManager
 from flask_appbuilder.security.views import expose
-from flask_appbuilder.security.manager import BaseSecurityManager
 from flask_login import login_user, logout_user
 
 # Change Metadata DB if env variable is set
