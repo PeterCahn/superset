@@ -2,12 +2,25 @@
 
 set -e
 
-echo "[superset-init] Initing default user..."
+# Set superset_config.py file: from the basic custom-config.py or the one in SUPERSET_CONFIG_PATH
+if [ -z "$SUPERSET_CONFIG_PATH" ] ; then
+        export SUPERSET_CONFIG_PATH=/usr/local/lib/python3.6/site-packages/superset/superset_config.py
+        cp -f /usr/local/bin/custom-config.py $SUPERSET_CONFIG_PATH
+else
+        if [ ! -f $SUPERSET_CONFIG_PATH ] ; then
+                echo "[superset-init] superset_config.py not found in $SUPERSET_CONFIG_PATH"
+                exit
+        fi
 
-# Init superset.db if not present
-if [ ! -f /var/lib/superset/superset.db ] ; then
-	touch /var/lib/superset/superset.db
-	chmod 755 /var/lib/superset/superset.db
+fi
+
+# Init superset.db as default DB if no other metadata DB is specified
+if [ -z "$SQLALCHEMY_METADATA_URI" ] ; then
+        echo "[superset-init] Creating default DB"
+        touch /var/lib/superset/superset.db
+        chmod 755 /var/lib/superset/superset.db
+else
+        echo "[superset-init] Metadata DB: $SQLALCHEMY_METADATA_URI"
 fi
 
 # Create an admin user
@@ -38,17 +51,30 @@ fi
 # Create user SUPERSETUSER if it does not exist
 USER=$(fabmanager list-users --app superset | grep "username:$SUPERSETUSER" | tr -d '[:space:]')
 if [ -n "$USER" ] ; then
-	echo -e "User '$SUPERSETUSER' already exists:\n$USER"
+    echo -e "[superset-init] User '$SUPERSETUSER' already exists:\n$USER"
 else
-    echo "Creating admin user '$SUPERSETUSER': $SUPERSETFIRSTNAME $SUPERSETLASTNAME (email: $SUPERSETEMAIL) with password '$SUPERSETPASSWORD'"
+    echo "[superset-init] Creating admin user '$SUPERSETUSER': $SUPERSETFIRSTNAME $SUPERSETLASTNAME (email: $SUPERSETEMAIL) with password '$SUPERSETPASSWORD'"
 
     fabmanager create-admin --app superset --username $SUPERSETUSER --firstname $SUPERSETFIRSTNAME --lastname $SUPERSETLASTNAME --email $SUPERSETEMAIL --password $SUPERSETPASSWORD
 fi
 
-echo "[superset-init] Upgrading DB..."
-# Initialize the database
+echo "[superset-init] Upgrading DB"
 superset db upgrade
 
-echo "[superset-init] Superset Init..."
-# Create default roles and permissions
+echo "[superset-init] Initialize default DB"
 superset init
+
+# Check whether to load example data or not. If SQLALCHEMY_DATA_URI is specified, actual data is load in there
+if [ -n "$LOAD_EXAMPLES" ] ; then		
+        echo "[superset-init] Loading examples..."
+        superset load_examples
+fi
+
+# Fix "Timestamped data with PostgreSQL backend" for version 0.28.1 (issue: https://github.com/apache/incubator-superset/issues/6284)
+sed -i -e 's/utc=False/utc=True/g' /usr/local/lib/python3.6/site-packages/superset/viz.py
+
+# Fix error when exporting yaml from datasource
+sed -i 's/key=lambda k: sorted(k.items()))/key=lambda k: (k.items()))/' /usr/local/lib/python3.6/site-packages/superset/models/helpers.py
+
+# Fix for ldap authentication (if enabled)
+sed -i 's/username = user\[0\]\[0\]/username = user\[1\]\[0\]/' /usr/local/lib/python3.6/site-packages/flask_appbuilder/security/manager.py
