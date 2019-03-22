@@ -1,6 +1,3 @@
-FORWARDED_ALLOW_IPS = '*'
-ENABLE_PROXY_FIX = True
-
 import logging, os
 
 # create logger
@@ -8,30 +5,46 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 from flask import Flask, redirect, url_for, g, flash, request, make_response, session as web_session
-from flask_appbuilder.security.views import UserDBModelView,AuthDBView,AuthRemoteUserView
+from flask_appbuilder.security.views import AuthRemoteUserView
 from superset.security import SupersetSecurityManager
 from flask_appbuilder.security.views import expose
 from flask_login import login_user, logout_user
+
+FORWARDED_ALLOW_IPS = '*'
+ENABLE_PROXY_FIX = True
 
 # Change Metadata DB if env variable is set
 if os.environ.get('SQLALCHEMY_METADATA_URI') is not None:
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_METADATA_URI')
     logger.debug('Metadata DB: %s', SQLALCHEMY_DATABASE_URI)
 
-# Check if enable cache
-if os.environ.get('CACHE_ENABLED') :
+# Check whether enabling cache or not. Available cache systems: filesystem, redis.
+if os.environ.get('CACHE_ENABLED') == 'filesystem' :
    directory = '/etc/superset_cache'
    if not os.path.exists(directory):
       os.makedirs(directory, exist_ok=True)
+   logger.info('Cache is enabled. Cache directory: {0}'.format(directory))
 
    CACHE_DEFAULT_TIMEOUT = 60 * 60 * 24
    CACHE_CONFIG = {
       'CACHE_TYPE': 'filesystem',
       'CACHE_DIR': directory
    }
-   logger.debug('Cache is enabled. Cache directory: {0}'.format(directory))
+elif os.environ.get('CACHE_ENABLED') == 'redis' : 
+   logger.info('Cache with Redis is enabled.')
+   CACHE_CONFIG = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 300,
+    'CACHE_KEY_PREFIX': 'superset_',
+    'CACHE_REDIS_HOST': 'redis',
+    'CACHE_REDIS_PORT': 6379,
+    'CACHE_REDIS_DB': 1,
+    'CACHE_REDIS_URL': 'redis://redis:6379/1'}
+
 else:
-   logger.debug('Cache is disabled.')
+   logger.info('Cache is disabled.')
+
+#IS_EPOCH_S_TRULY_UTC = True
 
 class CustomAuthRemoteView(AuthRemoteUserView):
 
@@ -56,15 +69,7 @@ class CustomAuthRemoteView(AuthRemoteUserView):
             redirect_url = intent
         else:
             redirect_url = "/" + self.appbuilder.get_url_for_index
-
-        # Flushing flash message "Access is denied"
-        #if web_session and '_flashes' in web_session:
-        #    web_session.pop('_flashes')
-       
-        #if g and g.user is not None and g.user.is_authenticated:
-        #    logger.debug('g.user: %s  (auth? %s)', g.user, g.user.is_authenticated)
-        #    return redirect(redirect_url)
-
+ 
         sm = self.appbuilder.sm
         session = sm.get_session
 		
@@ -143,5 +148,7 @@ class CustomAuthRemoteView(AuthRemoteUserView):
 class CustomSecurityManager(SupersetSecurityManager):
     authremoteuserview = CustomAuthRemoteView
 
-AUTH_TYPE = 3
+from flask_appbuilder.security.manager import AUTH_REMOTE_USER, AUTH_DB, AUTH_LDAP                                          
+
+AUTH_TYPE = AUTH_REMOTE_USER
 CUSTOM_SECURITY_MANAGER = CustomSecurityManager
