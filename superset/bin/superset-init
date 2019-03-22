@@ -4,7 +4,7 @@ set -e
 
 # Set superset_config.py file: from the basic custom-config.py or the one in SUPERSET_CONFIG_PATH
 if [ -z "$SUPERSET_CONFIG_PATH" ] ; then
-        export SUPERSET_CONFIG_PATH=/usr/local/lib/python3.6/site-packages/superset/superset_config.py
+        export SUPERSET_CONFIG_PATH=/etc/superset/superset_config.py
         cp -f /usr/local/bin/custom-config.py $SUPERSET_CONFIG_PATH
 else
         if [ ! -f $SUPERSET_CONFIG_PATH ] ; then
@@ -16,9 +16,11 @@ fi
 
 # Init superset.db as default DB if no other metadata DB is specified
 if [ -z "$SQLALCHEMY_METADATA_URI" ] ; then
-        echo "[superset-init] Creating default DB"
-        touch /var/lib/superset/superset.db
-        chmod 755 /var/lib/superset/superset.db
+        if [ ! -f /var/lib/superset/superset.db ] ; then
+	        echo "[superset-init] Creating default DB"
+	        touch /var/lib/superset/superset.db
+	        chmod 755 /var/lib/superset/superset.db
+        fi
 else
         echo "[superset-init] Metadata DB: $SQLALCHEMY_METADATA_URI"
 fi
@@ -71,7 +73,7 @@ if [ -n "$LOAD_EXAMPLES" ] ; then
 fi
 
 # Fix "Timestamped data with PostgreSQL backend" for version 0.28.1 (issue: https://github.com/apache/incubator-superset/issues/6284)
-sed -i -e 's/utc=False/utc=True/g' /usr/local/lib/python3.6/site-packages/superset/viz.py
+#sed -i -e 's/utc=False/utc=True/g' /usr/local/lib/python3.6/site-packages/superset/viz.py
 
 # Fix error when exporting yaml from datasource
 sed -i 's/key=lambda k: sorted(k.items()))/key=lambda k: (k.items()))/' /usr/local/lib/python3.6/site-packages/superset/models/helpers.py
