@@ -10,6 +10,7 @@ RUN chmod 755 /usr/local/bin/install-dremio.sh /usr/local/bin/superset-init /usr
     /usr/local/bin/install-dremio.sh
 
 ENV SUPERSETUSER=superset
+ENV TZ=Europe/Rome
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
