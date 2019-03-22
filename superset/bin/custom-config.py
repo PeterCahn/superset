@@ -44,8 +44,6 @@ elif os.environ.get('CACHE_ENABLED') == 'redis' :
 else:
    logger.info('Cache is disabled.')
 
-#IS_EPOCH_S_TRULY_UTC = True
-
 class CustomAuthRemoteView(AuthRemoteUserView):
 
     @expose('/logout/')
