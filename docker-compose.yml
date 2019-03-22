@@ -3,19 +3,27 @@ services:
     superset:
         image: pietrocannalire/superset:base
         container_name: superset
+        depends_on: 
+            - redis
         environment:
-            - SUPERSETFIRSTNAME=${SUPERSETFIRSTNAME}
-            - SUPERSETLASTNAME=${SUPERSETLASTNAME}
-            - CACHE_ENABLED=True
+            - CACHE_ENABLED=redis
+            - LOAD_EXAMPLES=True
         ports:
             - 8088:8088
         volumes:
-            - ./config:/etc/superset
+#            - ./config:/etc/superset
             - ./sqlite:/var/lib/superset            
 
-    postgres-superset:
+    redis:
+        image: redis
+        container_name: redis
+        restart: always
+        volumes:
+            - ./redis:/data
+
+    postgres:
         image: postgres:9.6
-        container_name: postgres-superset
+        container_name: postgres
         environment:
             - POSTGRES_PASSWORD=superset
             - POSTGRES_USER=superset
