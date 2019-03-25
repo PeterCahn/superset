@@ -4,11 +4,11 @@ import logging, os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+from flask_appbuilder.security.forms import LoginForm_db
+from flask_appbuilder.security.views import AuthRemoteUserView, expose
 from flask import Flask, redirect, url_for, g, flash, request, make_response, session as web_session
-from flask_appbuilder.security.views import AuthRemoteUserView
-from superset.security import SupersetSecurityManager
-from flask_appbuilder.security.views import expose
 from flask_login import login_user, logout_user
+from superset.security import SupersetSecurityManager
 
 FORWARDED_ALLOW_IPS = '*'
 ENABLE_PROXY_FIX = True
