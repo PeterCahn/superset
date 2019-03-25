@@ -4,6 +4,7 @@ import logging, os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.security.forms import LoginForm_db
 from flask_appbuilder.security.views import AuthRemoteUserView, expose
 from flask import Flask, redirect, url_for, g, flash, request, make_response, session as web_session
