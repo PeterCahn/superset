@@ -4,8 +4,8 @@ set -e
 
 # Set superset_config.py file: from the basic custom-config.py or the one in SUPERSET_CONFIG_PATH
 if [ -z "$SUPERSET_CONFIG_PATH" ] ; then
-        export SUPERSET_CONFIG_PATH=/etc/superset/superset_config.py
-        cp -f /usr/local/bin/custom-config.py $SUPERSET_CONFIG_PATH
+        export SUPERSET_CONFIG_PATH=/etc/superset/default-config.py
+        cp -n /usr/local/bin/custom-config.py $SUPERSET_CONFIG_PATH
 else
         if [ ! -f $SUPERSET_CONFIG_PATH ] ; then
                 echo "[superset-init] superset_config.py not found in $SUPERSET_CONFIG_PATH"
