@@ -26,6 +26,16 @@ if [ -z "$SQLALCHEMY_METADATA_URI" ] ; then
         fi
 else
         echo "[superset-init] Metadata DB: $SQLALCHEMY_METADATA_URI"
+
+	host=$(echo $SQLALCHEMY_METADATA_URI | awk -F'@' '{print $2}' | awk -F'/' '{print $1}' | awk -F':' '{print $1}')
+	port=$(echo $SQLALCHEMY_METADATA_URI | awk -F'@' '{print $2}' | awk -F'/' '{print $1}' | awk -F':' '{print $2}')
+	description="$host:$port"
+	
+	until nc -z "$host" "$port"; do
+	    echo "$description is unavailable - waiting"
+	    sleep 2
+	done
+
 fi
 
 # Create an admin user
